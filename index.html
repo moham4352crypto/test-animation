@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Journey of Mohamed - Fully Animated 3D Storyboard</title>
+    <title>The Journey of Mohamed - Enhanced Cinematic 3D Storyboard</title>
     <style>
         body, html {
             margin: 0;
@@ -123,7 +123,7 @@
             <div id="progress-bar"></div>
         </div>
         <h2 id="scene-title">Loading World...</h2>
-        <p id="scene-description">Initializing animated scene architecture and character models...</p>
+        <p id="scene-description">Building cinematic 3D scenes and character models...</p>
         <div class="controls-row">
             <span id="scene-counter">SCENE 1 / 8</span>
             <div class="btn-group">
@@ -137,11 +137,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
-        const SCENE_DURATION_MS = 15000; // 15s per scene = 120s total (2 minutes)
+        const SCENE_DURATION_MS = 15000; // 15 seconds per scene (120 seconds / 2 minutes total)
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x6ba4b8);
-        scene.fog = new THREE.FogExp2(0x6ba4b8, 0.015);
+        scene.fog = new THREE.FogExp2(0x6ba4b8, 0.012);
 
         const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -157,17 +157,18 @@
         sun.shadow.mapSize.height = 2048;
         scene.add(sun);
 
-        const ambientLight = new THREE.AmbientLight(0x778899, 0.8);
+        const ambientLight = new THREE.AmbientLight(0x778899, 0.85);
         scene.add(ambientLight);
 
         const worldGround = new THREE.Mesh(
-            new THREE.BoxGeometry(400, 2, 400),
+            new THREE.BoxGeometry(500, 2, 500),
             new THREE.MeshStandardMaterial({ color: 0x3a5a40, roughness: 0.85 })
         );
         worldGround.position.y = -1;
         worldGround.receiveShadow = true;
         scene.add(worldGround);
 
+        // Canvas Texture Helper for Signs & Cash
         function createSignTexture(text) {
             const canvas = document.createElement('canvas');
             canvas.width = 512;
@@ -186,7 +187,7 @@
             return new THREE.CanvasTexture(canvas);
         }
 
-        // Fixed Complete R6 Avatar (Includes Left AND Right Arms)
+        // Guaranteed Full R6 Roblox Avatar with Both Arms & Legs
         function createRobloxR6(opts = {}) {
             const {
                 shirtColor = 0x00a2ff,
@@ -308,7 +309,7 @@
             rightLegGroup.add(rightLeg);
             avatar.add(rightLegGroup);
 
-            avatar.rig = { leftArmGroup, rightArmGroup, leftLegGroup, rightLegGroup, rightArm };
+            avatar.rig = { leftArmGroup, rightArmGroup, leftLegGroup, rightLegGroup, torso };
             avatar.walkCycleTime = Math.random() * 10;
             return avatar;
         }
@@ -342,20 +343,19 @@
         function createArchitecturalCastle() {
             const castle = new THREE.Group();
             const stoneMat = new THREE.MeshStandardMaterial({ color: 0x5a626e, roughness: 0.85 });
-            const darkMat = new THREE.MeshStandardMaterial({ color: 0x2d3138, roughness: 0.9 });
             const roofMat = new THREE.MeshStandardMaterial({ color: 0x8b263e, roughness: 0.6 });
 
-            const frontWall = new THREE.Mesh(new THREE.BoxGeometry(32, 12, 3), stoneMat);
-            frontWall.position.set(0, 6, 0);
+            const frontWall = new THREE.Mesh(new THREE.BoxGeometry(36, 14, 4), stoneMat);
+            frontWall.position.set(0, 7, 0);
             castle.add(frontWall);
 
-            [-16, 16].forEach(tx => {
-                const tower = new THREE.Mesh(new THREE.CylinderGeometry(3.5, 4, 18, 12), stoneMat);
-                tower.position.set(tx, 9, 0);
+            [-18, 18].forEach(tx => {
+                const tower = new THREE.Mesh(new THREE.CylinderGeometry(4, 4.5, 20, 12), stoneMat);
+                tower.position.set(tx, 10, 0);
                 castle.add(tower);
 
-                const towerRoof = new THREE.Mesh(new THREE.ConeGeometry(4.5, 6, 12), roofMat);
-                towerRoof.position.set(tx, 21, 0);
+                const towerRoof = new THREE.Mesh(new THREE.ConeGeometry(5, 7, 12), roofMat);
+                towerRoof.position.set(tx, 23.5, 0);
                 castle.add(towerRoof);
             });
 
@@ -378,8 +378,8 @@
         const storyData = [
             {
                 title: "1. A Childhood Amidst Cacao Fields",
-                desc: "Young Mohamed walks up to the cacao tree, reaches out to pick a fresh pod, and brings it to the cauldron to brew the cacao elixir.",
-                camPos: [-12, 10, 24],
+                desc: "Amidst a dense forest of cacao trees, 8-year-old Mohamed physically walks up to a tree, plucks a fresh cacao pod, and carries it back to the cauldron to brew the cacao elixir.",
+                camPos: [-6, 10, 26],
                 camLookAt: [0, 3, 0],
                 skyColor: 0x2d6a4f,
                 setup: () => {
@@ -387,51 +387,67 @@
                     scene.fog.color.setHex(0x2d6a4f);
                     const props = [];
 
+                    // Dense Field of Trees (24 Trees)
+                    for (let x = -35; x <= 35; x += 14) {
+                        for (let z = -25; z <= 15; z += 12) {
+                            if (Math.abs(x) < 6 && Math.abs(z) < 6) continue;
+                            const tree = new THREE.Group();
+                            const trunk = new THREE.Mesh(new THREE.CylinderGeometry(1, 1.5, 12), new THREE.MeshStandardMaterial({ color: 0x4a2e1b }));
+                            trunk.position.y = 6;
+                            const leaves = new THREE.Mesh(new THREE.SphereGeometry(5.5, 8, 8), new THREE.MeshStandardMaterial({ color: 0x1b4332 }));
+                            leaves.position.y = 11;
+                            tree.add(trunk, leaves);
+                            tree.position.set(x + (Math.random() - 0.5) * 3, 0, z + (Math.random() - 0.5) * 3);
+                            scene.add(tree);
+                            props.push(tree);
+                        }
+                    }
+
                     const mohamed = createRobloxR6({ shirtColor: 0x2a9d8f, legColor: 0x264653, headColor: 0xe9c46a, isChild: true });
                     mohamed.position.set(-10, 0, 4);
                     scene.add(mohamed);
                     props.push(mohamed);
 
                     const cauldron = new THREE.Mesh(new THREE.CylinderGeometry(2, 1.5, 2.5, 16), new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.8 }));
-                    cauldron.position.set(-6, 1.25, 2);
+                    cauldron.position.set(-5, 1.25, 2);
                     scene.add(cauldron);
                     props.push(cauldron);
 
-                    const cacaoTree = new THREE.Group();
+                    const targetTree = new THREE.Group();
                     const trunk = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.8, 14), new THREE.MeshStandardMaterial({ color: 0x4a2e1b }));
                     trunk.position.y = 7;
                     const leaves = new THREE.Mesh(new THREE.SphereGeometry(6, 10, 10), new THREE.MeshStandardMaterial({ color: 0x1b4332 }));
                     leaves.position.y = 12;
-                    cacaoTree.add(trunk, leaves);
-                    cacaoTree.position.set(0, 0, 2);
-                    scene.add(cacaoTree);
-                    props.push(cacaoTree);
+                    targetTree.add(trunk, leaves);
+                    targetTree.position.set(4, 0, 1);
+                    scene.add(targetTree);
+                    props.push(targetTree);
 
                     const cacaoPod = new THREE.Mesh(new THREE.SphereGeometry(0.5, 8, 8), new THREE.MeshStandardMaterial({ color: 0x8b4513 }));
                     cacaoPod.scale.set(0.6, 1.4, 0.6);
-                    cacaoPod.position.set(0, 4.2, 3.2);
+                    cacaoPod.position.set(4, 4.2, 2.2);
                     scene.add(cacaoPod);
                     props.push(cacaoPod);
 
-                    let step = 0; // 0: walking to tree, 1: grabbing, 2: carrying to pot
+                    let step = 0;
                     return {
                         actors: props,
                         update: () => {
                             if (step === 0) {
-                                const walking = animateBotWalking(mohamed, 0, 4.2, 0.06);
+                                const walking = animateBotWalking(mohamed, 3, 2.2, 0.06);
                                 if (!walking) step = 1;
                             } else if (step === 1) {
                                 mohamed.rotation.y = 0;
                                 mohamed.rig.rightArmGroup.rotation.x = -Math.PI / 2;
-                                cacaoPod.position.set(mohamed.position.x + 0.6, 2.5, mohamed.position.z + 0.5);
-                                setTimeout(() => { step = 2; }, 1200);
+                                cacaoPod.position.set(mohamed.position.x + 0.4, 2.5, mohamed.position.z + 0.5);
+                                setTimeout(() => { step = 2; }, 1000);
                             } else if (step === 2) {
-                                cacaoPod.position.set(mohamed.position.x + 0.6, mohamed.position.y + 1.8, mohamed.position.z + 0.5);
-                                const walking = animateBotWalking(mohamed, -5, 3.2, 0.06);
+                                cacaoPod.position.set(mohamed.position.x + 0.4, mohamed.position.y + 1.8, mohamed.position.z + 0.5);
+                                const walking = animateBotWalking(mohamed, -4, 2.5, 0.06);
                                 if (!walking) {
                                     mohamed.rotation.y = -Math.PI / 2;
                                     mohamed.rig.rightArmGroup.rotation.x = -Math.PI / 4;
-                                    cacaoPod.position.set(-6, 2.2, 2);
+                                    cacaoPod.position.set(-5, 2.2, 2);
                                 }
                             }
                         }
@@ -440,7 +456,7 @@
             },
             {
                 title: "2. Ascension to Leadership",
-                desc: "Leader Mohamed carries the hummus bowl to the banquet table while tribe members walk up and wave in celebration.",
+                desc: "Leader Mohamed stands at the banquet table behind his castle, handing out bowls of fresh hummus to a long, organized line of tribe members.",
                 camPos: [0, 14, 28],
                 camLookAt: [0, 4, 0],
                 skyColor: 0xd4a373,
@@ -459,49 +475,49 @@
                     scene.add(table);
                     props.push(table);
 
-                    const hummusBowl = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.6, 0.4, 12), new THREE.MeshStandardMaterial({ color: 0xe9c46a }));
-                    hummusBowl.position.set(-8, 3, 2);
-                    scene.add(hummusBowl);
-                    props.push(hummusBowl);
-
                     const mohamed = createRobloxR6({ shirtColor: 0x2a9d8f, legColor: 0x1d3557, headColor: 0xf5cd2f, accessoryType: 'crown' });
-                    mohamed.position.set(-8, 0, 2);
+                    mohamed.position.set(0, 0, -2);
                     scene.add(mohamed);
                     props.push(mohamed);
 
-                    const villagers = [];
-                    [-10, 10].forEach((vx, idx) => {
-                        const v = createRobloxR6({ shirtColor: 0xe9c46a, legColor: 0x264653 });
-                        v.position.set(vx, 0, 6);
-                        scene.add(v);
-                        villagers.push(v);
-                        props.push(v);
-                    });
+                    // Line of 6 villagers queuing for hummus
+                    const lineQueue = [];
+                    for (let i = 0; i < 6; i++) {
+                        const villager = createRobloxR6({ shirtColor: 0xe9c46a, legColor: 0x264653 });
+                        villager.position.set(-1.5 + (i * 0.2), 0, 4 + (i * 3.5));
+                        scene.add(villager);
+                        lineQueue.push(villager);
+                        props.push(villager);
+                    }
+
+                    const activeBowl = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.5, 0.4, 12), new THREE.MeshStandardMaterial({ color: 0xe9c46a }));
+                    activeBowl.position.set(0, 2.1, 0);
+                    scene.add(activeBowl);
+                    props.push(activeBowl);
 
                     let t = 0;
                     return {
                         actors: props,
                         update: () => {
-                            t += 0.05;
-                            const walking = animateBotWalking(mohamed, 0, 2.2, 0.06);
-                            if (walking) {
-                                hummusBowl.position.set(mohamed.position.x, 2.6, mohamed.position.z + 0.6);
-                            } else {
-                                hummusBowl.position.set(0, 2.0, 0);
-                                mohamed.rig.leftArmGroup.rotation.x = -Math.PI / 2.5 + Math.sin(t) * 0.2;
-                                mohamed.rig.rightArmGroup.rotation.x = -Math.PI / 2.5 - Math.sin(t) * 0.2;
-                            }
+                            t += 0.04;
+                            mohamed.rig.rightArmGroup.rotation.x = -Math.PI / 2.5 + Math.sin(t * 3) * 0.2;
 
-                            animateBotWalking(villagers[0], -3.5, 4, 0.05);
-                            animateBotWalking(villagers[1], 3.5, 4, 0.05);
+                            lineQueue.forEach((v, idx) => {
+                                if (idx === 0) {
+                                    animateBotWalking(v, 0, 1.8, 0.04);
+                                    v.rig.leftArmGroup.rotation.x = -Math.PI / 3;
+                                } else {
+                                    animateBotWalking(v, -1.5, 3.5 + (idx * 3.2), 0.04);
+                                }
+                            });
                         }
                     };
                 }
             },
             {
-                title: "3. Warriors of Ancient Civilizations",
-                desc: "Mohamed advances with his sword, engaging in dynamic combat motion against invading ancient warriors.",
-                camPos: [0, 14, 30],
+                title: "3. Warriors of Ancient Civilizations (Army vs Army)",
+                desc: "Two grand armored armies collide on the battlefield! Mohamed leads the Egyptian-Mesopotamian forces into battle with clashing swords and thrusting spears.",
+                camPos: [0, 18, 36],
                 camLookAt: [0, 3, 0],
                 skyColor: 0xc2b280,
                 setup: () => {
@@ -509,18 +525,39 @@
                     scene.fog.color.setHex(0xc2b280);
                     const props = [];
 
+                    // Pyramids in background
+                    [-30, 30].forEach(px => {
+                        const pyramid = new THREE.Mesh(new THREE.ConeGeometry(25, 30, 4), new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.9 }));
+                        pyramid.rotation.y = Math.PI / 4;
+                        pyramid.position.set(px, 15, -35);
+                        scene.add(pyramid);
+                        props.push(pyramid);
+                    });
+
+                    // Mohamed leading Team A
                     const mohamed = createRobloxR6({ shirtColor: 0x3a5a40, legColor: 0x111111, accessoryType: 'helmet', weapon: 'sword' });
                     mohamed.position.set(-6, 0, 0);
                     scene.add(mohamed);
                     props.push(mohamed);
 
-                    const enemies = [];
-                    for (let e = 0; e < 3; e++) {
-                        const enemy = createRobloxR6({ shirtColor: 0x9e2a2b, legColor: 0x333333, accessoryType: 'helmet', weapon: 'spear' });
-                        enemy.position.set(6, 0, (e - 1) * 4);
-                        scene.add(enemy);
-                        enemies.push(enemy);
-                        props.push(enemy);
+                    // Team A (Egyptian Soldiers - 8 bots)
+                    const armyA = [mohamed];
+                    for (let a = 0; a < 7; a++) {
+                        const sol = createRobloxR6({ shirtColor: 0x2a9d8f, legColor: 0x1d3557, accessoryType: 'helmet', weapon: 'sword' });
+                        sol.position.set(-10 - Math.floor(a / 3) * 3, 0, (a % 3) * 4 - 4);
+                        scene.add(sol);
+                        armyA.push(sol);
+                        props.push(sol);
+                    }
+
+                    // Team B (Enemy Army - 8 bots)
+                    const armyB = [];
+                    for (let b = 0; b < 8; b++) {
+                        const sol = createRobloxR6({ shirtColor: 0x9e2a2b, legColor: 0x333333, accessoryType: 'helmet', weapon: 'spear' });
+                        sol.position.set(10 + Math.floor(b / 3) * 3, 0, (b % 3) * 4 - 4);
+                        scene.add(sol);
+                        armyB.push(sol);
+                        props.push(sol);
                     }
 
                     let time = 0;
@@ -528,12 +565,14 @@
                         actors: props,
                         update: () => {
                             time += 0.06;
-                            animateBotWalking(mohamed, -1, 0, 0.04);
-                            mohamed.rig.rightArmGroup.rotation.x = -Math.PI / 2 + Math.sin(time * 4) * 0.8;
+                            armyA.forEach((sol, i) => {
+                                animateBotWalking(sol, -1.5, sol.position.z, 0.05);
+                                sol.rig.rightArmGroup.rotation.x = -Math.PI / 2 + Math.sin(time * 5 + i) * 0.7;
+                            });
 
-                            enemies.forEach((en, idx) => {
-                                animateBotWalking(en, 2, (idx - 1) * 4, 0.03);
-                                en.rig.rightArmGroup.rotation.x = -Math.PI / 3 - Math.sin(time * 4 + idx) * 0.5;
+                            armyB.forEach((sol, i) => {
+                                animateBotWalking(sol, 1.5, sol.position.z, 0.05);
+                                sol.rig.rightArmGroup.rotation.x = -Math.PI / 3 - Math.sin(time * 5 + i) * 0.7;
                             });
                         }
                     };
@@ -541,7 +580,7 @@
             },
             {
                 title: "4. Conflict with the Oooga Oooga Tribe",
-                desc: "Oooga warriors capture Mohamed in a barrel and send him tumbling off the cliff edge into swirling ocean waves.",
+                desc: "The invading Oooga Oooga tribe overpowers the fortress, locking Mohamed into a heavy wooden barrel and hurling him into turbulent ocean waters.",
                 camPos: [10, 16, 32],
                 camLookAt: [-8, 6, 0],
                 skyColor: 0x1b263b,
@@ -561,10 +600,12 @@
                     scene.add(water);
                     props.push(water);
 
-                    const tribal = createRobloxR6({ shirtColor: 0x8b4513, legColor: 0x3d2314, accessoryType: 'oooga_mask', weapon: 'spear' });
-                    tribal.position.set(-16, 11, 0);
-                    scene.add(tribal);
-                    props.push(tribal);
+                    for (let i = 0; i < 3; i++) {
+                        const tribal = createRobloxR6({ shirtColor: 0x8b4513, legColor: 0x3d2314, accessoryType: 'oooga_mask', weapon: 'spear' });
+                        tribal.position.set(-16 + i * 2.5, 11, -3 + i * 2);
+                        scene.add(tribal);
+                        props.push(tribal);
+                    }
 
                     const barrelGroup = new THREE.Group();
                     const barrel = new THREE.Mesh(new THREE.CylinderGeometry(1.8, 1.8, 3.6, 14), new THREE.MeshStandardMaterial({ color: 0x6f4e37 }));
@@ -578,10 +619,8 @@
                         actors: props,
                         update: () => {
                             t += 0.04;
-                            animateBotWalking(tribal, -10, 0, 0.04);
-
                             if (barrelGroup.position.x < -4) {
-                                barrelGroup.position.x += 0.06;
+                                barrelGroup.position.x += 0.07;
                             } else if (barrelGroup.position.y > 0.8) {
                                 barrelGroup.position.x += 0.14;
                                 barrelGroup.position.y -= 0.28;
@@ -595,28 +634,45 @@
                 }
             },
             {
-                title: "5. Arrival in Ginga (Texas)",
-                desc: "Mohamed washes ashore on the sandy beach of Ginga, steps out of the barrel, and walks up to shake hands with Alizar.",
-                camPos: [0, 10, 24],
-                camLookAt: [0, 2, 0],
-                skyColor: 0x87ceeb,
+                title: "5. Arrival in Ginga (Texas Landscape)",
+                desc: "Mohamed's barrel washes ashore along rich Texan canyon mesas and desert sands. Mohamed emerges and shakes hands with Alizar to seal their alliance.",
+                camPos: [0, 12, 28],
+                camLookAt: [0, 3, 0],
+                skyColor: 0xf4a261,
                 setup: () => {
                     worldGround.material.color.setHex(0xe0a96d);
-                    scene.fog.color.setHex(0x87ceeb);
+                    scene.fog.color.setHex(0xf4a261);
                     const props = [];
 
-                    const c1 = createCactus(-12, -6);
-                    const c2 = createCactus(14, -8);
-                    scene.add(c1, c2);
-                    props.push(c1, c2);
+                    // Grand Desert Mesas & Rock Formations in background
+                    [-30, 0, 30].forEach((mx, i) => {
+                        const mesa = new THREE.Mesh(new THREE.CylinderGeometry(12 + i * 2, 16 + i * 2, 16, 8), new THREE.MeshStandardMaterial({ color: 0xb5651d, roughness: 0.9 }));
+                        mesa.position.set(mx, 8, -25);
+                        scene.add(mesa);
+                        props.push(mesa);
+                    });
+
+                    // Cacti field
+                    const cactiPositions = [[-14, -4], [-8, -12], [10, -6], [16, -10], [-18, 4], [18, 6]];
+                    cactiPositions.forEach(p => {
+                        const c = createCactus(p[0], p[1]);
+                        scene.add(c);
+                        props.push(c);
+                    });
+
+                    const brokenBarrel = new THREE.Mesh(new THREE.CylinderGeometry(1.8, 1.8, 1.8, 8, 1, false, 0, Math.PI), new THREE.MeshStandardMaterial({ color: 0x6f4e37 }));
+                    brokenBarrel.position.set(-8, 0.8, 0);
+                    brokenBarrel.rotation.z = Math.PI / 2;
+                    scene.add(brokenBarrel);
+                    props.push(brokenBarrel);
 
                     const mohamed = createRobloxR6({ shirtColor: 0x2a9d8f, legColor: 0x264653 });
-                    mohamed.position.set(-8, 0, 0);
+                    mohamed.position.set(-6, 0, 0);
                     scene.add(mohamed);
                     props.push(mohamed);
 
                     const alizar = createRobloxR6({ shirtColor: 0xf4a261, legColor: 0x6b705c });
-                    alizar.position.set(8, 0, 0);
+                    alizar.position.set(6, 0, 0);
                     scene.add(alizar);
                     props.push(alizar);
 
@@ -639,8 +695,8 @@
                 }
             },
             {
-                title: "6. Embracing the Texan Way (A&M Snacks)",
-                desc: "At A&M Snacks, Mohamed hands chocolate boxes across the counter while Alizar stocks items and customers step up in line.",
+                title: "6. Embracing the Texan Way (A&M Snacks Market)",
+                desc: "A huge crowd of hungry customers line up at A&M Snacks! Customers exchange money cash bills while Mohamed and Alizar hand out sweet chocolate bars.",
                 camPos: [0, 16, 36],
                 camLookAt: [0, 3, 0],
                 skyColor: 0xdda15e,
@@ -649,141 +705,188 @@
                     scene.fog.color.setHex(0xdda15e);
                     const props = [];
 
-                    const shop = new THREE.Mesh(new THREE.BoxGeometry(16, 7, 7), new THREE.MeshStandardMaterial({ color: 0x8b5a2b }));
-                    shop.position.set(0, 3.5, -5);
-                    const signBoard = new THREE.Mesh(new THREE.BoxGeometry(12, 3, 0.4), new THREE.MeshStandardMaterial({ map: createSignTexture("A&M SNACKS") }));
-                    signBoard.position.set(0, 7.5, -1.3);
+                    const shop = new THREE.Mesh(new THREE.BoxGeometry(18, 8, 7), new THREE.MeshStandardMaterial({ color: 0x8b5a2b }));
+                    shop.position.set(0, 4, -5);
+                    const signBoard = new THREE.Mesh(new THREE.BoxGeometry(14, 3.2, 0.4), new THREE.MeshStandardMaterial({ map: createSignTexture("A&M SNACKS") }));
+                    signBoard.position.set(0, 8.5, -1.3);
                     scene.add(shop, signBoard);
                     props.push(shop, signBoard);
 
-                    const counter = new THREE.Mesh(new THREE.BoxGeometry(13, 1.8, 1.4), new THREE.MeshStandardMaterial({ color: 0x5c3d1e }));
+                    const counter = new THREE.Mesh(new THREE.BoxGeometry(14, 1.8, 1.4), new THREE.MeshStandardMaterial({ color: 0x5c3d1e }));
                     counter.position.set(0, 0.9, 0.2);
                     scene.add(counter);
                     props.push(counter);
 
                     const mohamed = createRobloxR6({ shirtColor: 0x2a9d8f, legColor: 0x264653 });
-                    mohamed.position.set(-2, 0, -1);
+                    mohamed.position.set(-3, 0, -1);
                     scene.add(mohamed);
                     props.push(mohamed);
 
                     const alizar = createRobloxR6({ shirtColor: 0xf4a261, legColor: 0x6b705c });
-                    alizar.position.set(4, 0, -1);
+                    alizar.position.set(3, 0, -1);
                     scene.add(alizar);
                     props.push(alizar);
 
-                    const customer = createRobloxR6({ shirtColor: 0x00bbf9, legColor: 0x111111 });
-                    customer.position.set(-2, 0, 8);
-                    scene.add(customer);
-                    props.push(customer);
+                    // 8 Customers lined up
+                    const customers = [];
+                    for (let c = 0; c < 8; c++) {
+                        const cust = createRobloxR6({ shirtColor: 0x00bbf9, legColor: 0x111111 });
+                        cust.position.set((c - 3.5) * 3, 0, 4 + (c % 2) * 2.5);
+                        scene.add(cust);
+                        customers.push(cust);
+                        props.push(cust);
+                    }
+
+                    // Floating Cash & Chocolate exchange meshes
+                    const cashMesh = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.05, 0.4), new THREE.MeshBasicMaterial({ color: 0x2a9d8f }));
+                    cashMesh.position.set(-2, 2.2, 1.5);
+                    const chocMesh = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.8), new THREE.MeshBasicMaterial({ color: 0x4a2e1b }));
+                    chocMesh.position.set(3, 2.2, 1.5);
+                    scene.add(cashMesh, chocMesh);
+                    props.push(cashMesh, chocMesh);
 
                     let t = 0;
                     return {
                         actors: props,
                         update: () => {
-                            t += 0.04;
-                            const custMoving = animateBotWalking(customer, -2, 2, 0.05);
-                            if (!custMoving) {
-                                customer.rig.rightArmGroup.rotation.x = -Math.PI / 2.5;
-                                mohamed.rig.rightArmGroup.rotation.x = -Math.PI / 2.5 + Math.sin(t * 4) * 0.15;
-                            }
+                            t += 0.05;
+                            mohamed.rig.rightArmGroup.rotation.x = -Math.PI / 2.5 + Math.sin(t * 4) * 0.2;
+                            alizar.rig.rightArmGroup.rotation.x = -Math.PI / 2.5 + Math.sin(t * 4) * 0.2;
 
-                            animateBotWalking(alizar, 2 + Math.sin(t) * 2, -1, 0.03);
+                            cashMesh.position.y = 2.2 + Math.sin(t * 5) * 0.2;
+                            chocMesh.position.y = 2.2 + Math.cos(t * 5) * 0.2;
+
+                            customers.forEach((cust, idx) => {
+                                cust.rig.rightArmGroup.rotation.x = -Math.PI / 3 + Math.sin(t * 2 + idx) * 0.15;
+                            });
                         }
                     };
                 }
             },
             {
                 title: "7. The Threat of Corruption",
-                desc: "Enforcers march around carrying torches as fire burns the snack shop. Mohamed stands firm and resolute in the foreground.",
-                camPos: [0, 13, 28],
+                desc: "Corrupt enforcer squads strike! Two forces beat up Mohamed & Alizar while another squad sets the snack shop ablaze, burning it pitch black.",
+                camPos: [0, 14, 28],
                 camLookAt: [0, 3, 0],
-                skyColor: 0x2b1100,
+                skyColor: 0x1b0000,
                 setup: () => {
                     worldGround.material.color.setHex(0x181310);
-                    scene.fog.color.setHex(0x2b1100);
+                    scene.fog.color.setHex(0x1b0000);
                     const props = [];
 
-                    const charredBase = new THREE.Mesh(new THREE.BoxGeometry(14, 5.5, 6.5), new THREE.MeshStandardMaterial({ color: 0x151515 }));
-                    charredBase.position.set(0, 2.75, -4);
-                    scene.add(charredBase);
-                    props.push(charredBase);
+                    const shopMat = new THREE.MeshStandardMaterial({ color: 0x8b5a2b, roughness: 0.8 });
+                    const shop = new THREE.Mesh(new THREE.BoxGeometry(18, 8, 7), shopMat);
+                    shop.position.set(0, 4, -4);
+                    scene.add(shop);
+                    props.push(shop);
 
-                    const fireLight = new THREE.PointLight(0xff4500, 6, 35);
-                    fireLight.position.set(0, 4, -2);
+                    const fireLight = new THREE.PointLight(0xff3300, 8, 40);
+                    fireLight.position.set(0, 4, -1);
                     scene.add(fireLight);
                     props.push(fireLight);
 
+                    // Smoke / Embers
+                    const embers = [];
+                    for (let i = 0; i < 50; i++) {
+                        const emb = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.35, 0.35), new THREE.MeshBasicMaterial({ color: 0xff8800 }));
+                        emb.position.set((Math.random() - 0.5) * 14, Math.random() * 8, -4 + (Math.random() - 0.5) * 4);
+                        scene.add(emb);
+                        embers.push(emb);
+                        props.push(emb);
+                    }
+
+                    // Mohamed & Alizar being attacked
                     const mohamed = createRobloxR6({ shirtColor: 0x2a9d8f, legColor: 0x264653 });
-                    mohamed.position.set(0, 0, 4);
+                    mohamed.position.set(-3, 0, 3);
                     scene.add(mohamed);
                     props.push(mohamed);
 
-                    const enforcer = createRobloxR6({ shirtColor: 0x111111, legColor: 0x050505, accessoryType: 'helmet', weapon: 'torch' });
-                    enforcer.position.set(-8, 0, 1);
-                    scene.add(enforcer);
-                    props.push(enforcer);
+                    const alizar = createRobloxR6({ shirtColor: 0xf4a261, legColor: 0x6b705c });
+                    alizar.position.set(3, 0, 3);
+                    scene.add(alizar);
+                    props.push(alizar);
 
-                    let burnTime = 0;
+                    // 2 Squads attacking Mohamed & Alizar
+                    const attacker1 = createRobloxR6({ shirtColor: 0x111111, legColor: 0x050505, accessoryType: 'helmet', weapon: 'spear' });
+                    attacker1.position.set(-4.5, 0, 3);
+                    const attacker2 = createRobloxR6({ shirtColor: 0x111111, legColor: 0x050505, accessoryType: 'helmet', weapon: 'spear' });
+                    attacker2.position.set(4.5, 0, 3);
+                    scene.add(attacker1, attacker2);
+                    props.push(attacker1, attacker2);
+
+                    // Arson Squad throwing torches
+                    const arsonist = createRobloxR6({ shirtColor: 0x111111, legColor: 0x050505, accessoryType: 'helmet', weapon: 'torch' });
+                    arsonist.position.set(0, 0, 0);
+                    scene.add(arsonist);
+                    props.push(arsonist);
+
+                    let burnProgress = 0;
                     return {
                         actors: props,
                         update: () => {
-                            burnTime += 0.03;
-                            fireLight.intensity = 5 + Math.sin(burnTime * 20) * 2;
-                            animateBotWalking(enforcer, 8, 1, 0.04);
-                            mohamed.rig.leftArmGroup.rotation.x = -Math.PI / 3;
-                            mohamed.rig.rightArmGroup.rotation.x = -Math.PI / 3;
+                            burnProgress += 0.003;
+                            // Dynamically transition shop color to pitch black charcoal
+                            shopMat.color.lerp(new THREE.Color(0x050505), Math.min(burnProgress, 1));
+                            fireLight.intensity = 6 + Math.sin(burnProgress * 40) * 3;
+
+                            // Beating animation
+                            attacker1.rig.rightArmGroup.rotation.x = -Math.PI / 2 + Math.sin(burnProgress * 50) * 0.8;
+                            attacker2.rig.rightArmGroup.rotation.x = -Math.PI / 2 + Math.cos(burnProgress * 50) * 0.8;
+                            mohamed.rig.torso.rotation.z = Math.sin(burnProgress * 20) * 0.2;
+                            alizar.rig.torso.rotation.z = -Math.sin(burnProgress * 20) * 0.2;
+
+                            embers.forEach(p => {
+                                p.position.y += 0.12;
+                                if (p.position.y > 10) p.position.y = 0.5;
+                            });
                         }
                     };
                 }
             },
             {
                 title: "8. Mohamed’s Legacy (The Mirja)",
-                desc: "Mohamed stands on a golden dais, raising both hands to bless his followers as glowing aura sparkles float upwards.",
-                camPos: [0, 12, 30],
-                camLookAt: [0, 3, 0],
+                desc: "Revered as a spiritual Mirja leader, Mohamed stands upon a golden dais while a massive crowd of followers bow and honor his enduring legacy.",
+                camPos: [0, 14, 34],
+                camLookAt: [0, 4, 0],
                 skyColor: 0xfffae6,
                 setup: () => {
                     worldGround.material.color.setHex(0x52b788);
                     scene.fog.color.setHex(0xfffae6);
                     const props = [];
 
-                    const dais = new THREE.Mesh(new THREE.CylinderGeometry(6, 7, 2, 20), new THREE.MeshStandardMaterial({ color: 0xf8f9fa }));
-                    dais.position.set(0, 1, -2);
+                    const dais = new THREE.Mesh(new THREE.CylinderGeometry(7, 8, 2.5, 20), new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.8, roughness: 0.2 }));
+                    dais.position.set(0, 1.25, -2);
                     scene.add(dais);
                     props.push(dais);
 
-                    const auraLight = new THREE.PointLight(0xffd700, 5, 30);
-                    auraLight.position.set(0, 5, -2);
+                    const auraLight = new THREE.PointLight(0xffd700, 6, 35);
+                    auraLight.position.set(0, 6, -2);
                     scene.add(auraLight);
                     props.push(auraLight);
 
                     const mohamed = createRobloxR6({ shirtColor: 0xffffff, legColor: 0xffffff, headColor: 0xf5cd2f, accessoryType: 'crown' });
-                    mohamed.position.set(0, 2, -2);
+                    mohamed.position.set(0, 2.5, -2);
                     scene.add(mohamed);
                     props.push(mohamed);
 
-                    const followers = [];
-                    [-4, 4].forEach(fx => {
-                        const fol = createRobloxR6({ shirtColor: 0x74c69d, legColor: 0x1b4332 });
-                        fol.position.set(fx, 0, 6);
-                        scene.add(fol);
-                        followers.push(fol);
-                        props.push(fol);
-                    });
+                    // Large crowd of 16 followers obeying & bowing
+                    for (let x = -14; x <= 14; x += 4) {
+                        for (let z = 4; z <= 12; z += 4) {
+                            const follower = createRobloxR6({ shirtColor: 0x74c69d, legColor: 0x1b4332 });
+                            follower.position.set(x + (Math.random() - 0.5), 0, z);
+                            scene.add(follower);
+                            props.push(follower);
+                        }
+                    }
 
                     let time = 0;
                     return {
                         actors: props,
                         update: () => {
                             time += 0.03;
-                            auraLight.intensity = 3.5 + Math.sin(time * 3) * 1.5;
+                            auraLight.intensity = 4 + Math.sin(time * 3) * 2;
                             mohamed.rig.leftArmGroup.rotation.x = -Math.PI / 2.2 + Math.sin(time * 2) * 0.1;
                             mohamed.rig.rightArmGroup.rotation.x = -Math.PI / 2.2 + Math.sin(time * 2) * 0.1;
-
-                            followers.forEach((f, idx) => {
-                                animateBotWalking(f, idx === 0 ? -2 : 2, 3, 0.03);
-                                f.rig.rightArmGroup.rotation.x = -Math.PI / 2.5;
-                            });
                         }
                     };
                 }

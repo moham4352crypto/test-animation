@@ -27,24 +27,46 @@
 
         #story-ui {
             position: absolute;
-            bottom: 25px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 88%;
-            max-width: 950px;
-            background: rgba(10, 14, 22, 0.94);
-            backdrop-filter: blur(14px);
-            border: 2px solid rgba(0, 198, 255, 0.5);
-            border-radius: 12px;
-            padding: 20px 25px;
-            box-shadow: 0 10px 35px rgba(0,0,0,0.9);
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            max-width: none;
+            box-sizing: border-box;
+            padding: 10px 22px 13px;
+            background: linear-gradient(
+                to bottom,
+                rgba(5, 8, 17, 0.02) 0%,
+                rgba(5, 8, 17, 0.34) 18%,
+                rgba(5, 8, 17, 0.78) 58%,
+                rgba(5, 8, 17, 0.93) 100%
+            );
+            backdrop-filter: blur(4px);
+            border: 0;
+            border-top: 1px solid rgba(255,255,255,0.10);
+            border-radius: 0;
+            box-shadow: 0 -8px 25px rgba(0,0,0,0.22);
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            grid-template-areas:
+                "progress progress"
+                "info controls";
+            align-items: end;
+            column-gap: 18px;
+            row-gap: 5px;
             z-index: 10;
+            pointer-events: none;
+        }
+
+        .scene-info {
+            grid-area: info;
+            min-width: 0;
+            padding: 0 0 2px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.9);
         }
 
         #progress-bar-container {
+            grid-area: progress;
             width: 100%;
             height: 6px;
             background: rgba(255, 255, 255, 0.15);
@@ -61,35 +83,43 @@
 
         #scene-title {
             margin: 0;
-            font-size: 22px;
+            font-size: 21px;
             color: #ffcc00;
             letter-spacing: 1px;
             text-shadow: 0 0 12px rgba(255, 204, 0, 0.5);
         }
 
         #scene-description {
-            margin: 0;
-            font-size: 15px;
-            line-height: 1.6;
-            color: #ddd;
-            min-height: 52px;
+            margin: 2px 0 0;
+            font-size: 14px;
+            line-height: 1.42;
+            color: rgba(245,245,245,0.92);
+            min-height: 0;
+            max-width: 1100px;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
         }
 
         .controls-row {
+            grid-area: controls;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
-            border-top: 1px solid rgba(255,255,255,0.15);
-            padding-top: 12px;
+            gap: 12px;
+            border-top: 0;
+            padding-top: 0;
+            pointer-events: auto;
         }
 
         .btn-group {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         button {
-            padding: 10px 18px;
+            padding: 9px 16px;
             font-size: 14px;
             font-weight: bold;
             color: white;
@@ -109,9 +139,28 @@
 
         #scene-counter {
             font-family: monospace;
-            font-size: 14px;
+            font-size: 13px;
             color: #aaa;
         }
+        @media (max-width: 700px) {
+            #story-ui {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "progress"
+                    "info"
+                    "controls";
+                row-gap: 4px;
+            }
+
+            .controls-row {
+                justify-content: space-between;
+            }
+
+            #scene-description {
+                -webkit-line-clamp: 2;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -122,8 +171,10 @@
         <div id="progress-bar-container">
             <div id="progress-bar"></div>
         </div>
-        <h2 id="scene-title">Loading World...</h2>
-        <p id="scene-description">Building scene...</p>
+        <div class="scene-info">
+            <h2 id="scene-title">Loading World...</h2>
+            <p id="scene-description">Building scene...</p>
+        </div>
         <div class="controls-row">
             <span id="scene-counter">SCENE 1 / 8</span>
             <div class="btn-group">
@@ -471,15 +522,178 @@ function createTorch(x, y, z) {
         }
 
 
+
+        // Extra scene dressing: decorative details added without replacing or removing
+        // the original scene objects, animations, or story beats.
+        function addSceneDetails(sceneId, props) {
+            const add = (obj) => { scene.add(obj); props.push(obj); return obj; };
+            const mat = (color, roughness = 0.8, metalness = 0) =>
+                new THREE.MeshStandardMaterial({ color, roughness, metalness });
+
+            if (sceneId === 1) {
+                // Ground foliage + a few extra cacao pods and baskets.
+                for (let i = 0; i < 14; i++) {
+                    const tuft = new THREE.Mesh(new THREE.SphereGeometry(0.45 + (i % 3) * 0.12, 8, 6), mat(0x40916c, 1));
+                    tuft.scale.set(1.3, 0.45, 1.0);
+                    tuft.position.set((i % 7) * 6 - 18, 0.35, (i % 2) * 7 + 5);
+                    add(tuft);
+                }
+                for (let i = 0; i < 6; i++) {
+                    const pod = new THREE.Mesh(new THREE.SphereGeometry(0.35, 8, 8), mat(0x7f4f24, 0.75));
+                    pod.scale.set(0.7, 1.25, 0.7);
+                    pod.position.set(-16 + i * 6, 0.55, 9 - (i % 2) * 3);
+                    add(pod);
+                }
+            } else if (sceneId === 2) {
+                // Courtyard trim: pennants, serving bowls, and low stone edging.
+                const bannerMat = mat(0x457b9d, 0.6);
+                for (let x = -10; x <= 10; x += 5) {
+                    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 5), mat(0x5c3d1e));
+                    pole.position.set(x, 2.5, 2.5);
+                    add(pole);
+                    const flag = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 1.8), bannerMat);
+                    flag.position.set(x + 0.55, 3.5, 2.5);
+                    flag.rotation.y = Math.PI;
+                    add(flag);
+                }
+                for (let i = -2; i <= 2; i++) {
+                    const bowl = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.3, 0.22, 12), mat(0xd9b44a));
+                    bowl.position.set(i * 2.5, 0.15, 4.5);
+                    add(bowl);
+                }
+            } else if (sceneId === 3) {
+                // Battlefield dressing: scattered stones, broken shafts, and dust motes.
+                for (let i = 0; i < 12; i++) {
+                    const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(0.45 + (i % 2) * 0.2), mat(0x6b6258));
+                    rock.position.set((i % 6) * 5.5 - 14, 0.35, 7 - (i % 3) * 4);
+                    add(rock);
+                }
+                for (let i = 0; i < 8; i++) {
+                    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 2.5), mat(0x5c3d1e));
+                    shaft.position.set(-15 + i * 4, 0.8, -9 + (i % 2) * 2);
+                    shaft.rotation.z = (i % 2 ? 0.5 : -0.4);
+                    add(shaft);
+                }
+                const dustMat = new THREE.MeshBasicMaterial({ color: 0xe4d8b4, transparent: true, opacity: 0.18 });
+                for (let i = 0; i < 18; i++) {
+                    const dust = new THREE.Mesh(new THREE.SphereGeometry(0.18, 6, 6), dustMat);
+                    dust.position.set((i % 9) * 4 - 16, 1 + (i % 4) * 0.9, -2 + (i % 3) * 5);
+                    add(dust);
+                }
+            } else if (sceneId === 4) {
+                // Coastal cliff dressing: sea foam, mooring rope, and scattered timber.
+                const foamMat = new THREE.MeshBasicMaterial({ color: 0xeafcff, transparent: true, opacity: 0.65 });
+                for (let i = 0; i < 12; i++) {
+                    const foam = new THREE.Mesh(new THREE.TorusGeometry(0.5 + (i % 3) * 0.25, 0.08, 6, 16), foamMat);
+                    foam.rotation.x = Math.PI / 2;
+                    foam.position.set(-12 + (i % 6) * 5, 0.22, 8 + (i % 2) * 3);
+                    add(foam);
+                }
+                for (let i = 0; i < 5; i++) {
+                    const timber = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.3, 0.45), mat(0x6f4e37));
+                    timber.position.set(-27 + i * 4, 0.5, 6 + (i % 2) * 2);
+                    timber.rotation.y = i * 0.35;
+                    add(timber);
+                }
+                const rope = new THREE.Mesh(new THREE.TorusGeometry(0.65, 0.12, 8, 18), mat(0x8d6e63));
+                rope.position.set(-9.5, 1.0, 4.5);
+                rope.rotation.x = Math.PI / 2;
+                add(rope);
+            } else if (sceneId === 5) {
+                // Ginga arrival details: desert plants, driftwood, and small tide markers.
+                for (let i = 0; i < 7; i++) {
+                    const cactus = new THREE.Group();
+                    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.5, 2.5, 8), mat(0x588157));
+                    body.position.y = 1.25;
+                    cactus.add(body);
+                    if (i % 2 === 0) {
+                        const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 1.1, 8), mat(0x588157));
+                        arm.position.set(0.5, 1.2, 0);
+                        arm.rotation.z = Math.PI / 2.4;
+                        cactus.add(arm);
+                    }
+                    cactus.position.set(-14 + i * 4.5, 0, 4 + (i % 2) * 2);
+                    add(cactus);
+                }
+                const driftMat = mat(0x7f5539);
+                for (let i = 0; i < 5; i++) {
+                    const drift = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.35, 0.35), driftMat);
+                    drift.position.set(-12 + i * 5, 0.3, 7 - (i % 2) * 3);
+                    drift.rotation.z = (i - 2) * 0.12;
+                    add(drift);
+                }
+            } else if (sceneId === 6) {
+                // Snack plaza details: awning trim, stacked chocolate crates, and signage accents.
+                const trimMat = mat(0xffd166, 0.55);
+                for (let x = -7.5; x <= 7.5; x += 2.5) {
+                    const strip = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.25, 0.25), trimMat);
+                    strip.position.set(x, 7.8, -1.8);
+                    add(strip);
+                }
+                const chocMat2 = mat(0x3d2314, 0.35);
+                for (let i = 0; i < 9; i++) {
+                    const bar = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.18, 0.9), chocMat2);
+                    bar.position.set(-6 + (i % 5) * 3, 0.18, 6 + Math.floor(i / 5) * 1.2);
+                    add(bar);
+                }
+                const crateMat2 = mat(0x704214);
+                for (let i = 0; i < 3; i++) {
+                    const crate = new THREE.Mesh(new THREE.BoxGeometry(2.0, 1.0, 1.4), crateMat2);
+                    crate.position.set(-11 + i * 11, 0.5, 11);
+                    add(crate);
+                }
+            } else if (sceneId === 7) {
+                // Burning-shop dressing: roof smoke, rubble, and warning lanterns.
+                const smokeMat = new THREE.MeshBasicMaterial({ color: 0x222222, transparent: true, opacity: 0.18 });
+                for (let i = 0; i < 16; i++) {
+                    const smoke = new THREE.Mesh(new THREE.SphereGeometry(0.45 + (i % 3) * 0.2, 8, 8), smokeMat);
+                    smoke.position.set(-6 + (i % 8) * 1.7, 5 + (i % 4) * 1.0, -5 + (i % 3) * 1.5);
+                    add(smoke);
+                }
+                for (let i = 0; i < 8; i++) {
+                    const rubble = new THREE.Mesh(new THREE.DodecahedronGeometry(0.3 + (i % 2) * 0.15), mat(0x3a2f2a));
+                    rubble.position.set(-7 + i * 2, 0.35, 2.8 + (i % 2));
+                    add(rubble);
+                }
+                for (const x of [-7, 7]) {
+                    const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.3, 10, 10), new THREE.MeshBasicMaterial({ color: 0xff8c42 }));
+                    lamp.position.set(x, 2.5, -0.5);
+                    add(lamp);
+                }
+            } else if (sceneId === 8) {
+                // Legacy scene dressing: marble steps, planters, and gentle ground lights.
+                const stepMat = mat(0xe9ecef, 0.25);
+                for (let i = 0; i < 3; i++) {
+                    const step = new THREE.Mesh(new THREE.BoxGeometry(14 - i * 2, 0.45, 4 - i * 0.5), stepMat);
+                    step.position.set(0, 0.25 + i * 0.45, 5 - i * 0.6);
+                    add(step);
+                }
+                for (const x of [-10, 10]) {
+                    const planter = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.5, 0.8, 10), mat(0xc9c5ba));
+                    planter.position.set(x, 0.4, 6);
+                    add(planter);
+                    const plant = new THREE.Mesh(new THREE.SphereGeometry(1.1, 8, 8), mat(0x74c69d));
+                    plant.position.set(x, 1.35, 6);
+                    add(plant);
+                }
+                for (const x of [-13, 13]) {
+                    const orb = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 10), new THREE.MeshBasicMaterial({ color: 0xffd166 }));
+                    orb.position.set(x, 2.2, 4);
+                    add(orb);
+                }
+            }
+        }
+
         const storyData = [
             {
                 title: "1. A Childhood Amidst Cacao Fields",
-                desc: "Mohamed explores a lush, highly detailed cacao plantation packed with dense foliage, trees, wheelbarrows, fences, and working villagers, plucking a ripe cacao pod.",
+                desc: "At age eight, Mohamed begins working among the cacao trees, harvesting ripe pods that will be turned into a treasured chocolate drink. The plantation is busy with workers, crates, fences, and the rich aroma of cacao.",
                 camPos: [-14, 12, 28],
                 camLookAt: [0, 4, 0],
                 setup: () => {
                     worldGround.material.color.setHex(0x2d6a4f);
                     const props = [];
+                    addSceneDetails(1, props);
 
                     const mohamed = createRobloxR6(0x2a9d8f, 0x264653, 0xe9c46a);
                     mohamed.position.set(-18, 0, 6);
@@ -580,13 +794,12 @@ function createTorch(x, y, z) {
             },
             {
                 title: "2. Ascension to Leadership",
-                desc: "Mohamed hands out steaming bowls of stew in a vast castle courtyard filled with banners, glowing wall torches, tables, and a queuing line of grateful villagers.",
+                desc: "As Mohamed grows into a respected leader of the Hums, he stands before their castle and helps provide food for his people. His leadership, wisdom, and introduction of hummus strengthen the community.",
                 camPos: [0, 14, 28],
                 camLookAt: [0, 4, 0],
                 setup: () => {
                     worldGround.material.color.setHex(0xd4a373);
                     const props = [];
-
                     // Detailed Castle Background Architecture
                     const castleBack = createArchitecturalCastle();
                     castleBack.position.set(0, 0, -12);
@@ -703,7 +916,7 @@ function createTorch(x, y, z) {
             },
             {
                 title: "3. Warriors of Ancient Civilizations (Army vs Army)",
-                desc: "Two grand armies clash on the battlefield! Armored spearmen and swordsmen collide in high-energy ancient combat.",
+                desc: "Mohamed fights in the wars of Egypt and Mesopotamia, leading armored warriors with swords and spears. His courage and strategic thinking earn him respect across ancient civilizations.",
                 camPos: [0, 16, 32],
                 camLookAt: [0, 3, 0],
                 skyColor: 0xc2b280,
@@ -711,6 +924,7 @@ function createTorch(x, y, z) {
                     worldGround.material.color.setHex(0xc2b280);
                     scene.fog.color.setHex(0xc2b280);
                     const props = [];
+                    addSceneDetails(3, props);
 
                     // Pyramids
                     [-28, 28].forEach(px => {
@@ -765,13 +979,12 @@ function createTorch(x, y, z) {
             },
             {
                 title: "4. Cast Adrift to Save Mohamed",
-                desc: "REALISTIC CASTLE FIX: Clean architectural castle walls and towers with zero clipping blocks! Red troops attack Blue defenders, as loyal companions push Mohamed in a wooden barrel off the cliff ledge.",
+                desc: "The Hums face an invasion by the Oooga Oooga tribe. In the chaos of battle, the enemy captures Mohamed and his loyal companions push him away in a wooden barrel, sending him toward the sea.",
                 camPos: [10, 16, 32],
                 camLookAt: [-8, 6, 0],
                 setup: () => {
                     worldGround.material.color.setHex(0x005f73);
                     const props = [];
-
                     // Detailed Cliff Base
                     const cliff = new THREE.Mesh(
                         new THREE.BoxGeometry(26, 12, 22),
@@ -906,12 +1119,13 @@ function createTorch(x, y, z) {
             },
             {
                 title: "5. Arrival in Ginga (Texas)",
-                desc: "Mohamed washes ashore on a tropical desert coast with palm trees, rock formations, ocean waves, and washed-up barrel pieces, reuniting with Alizar.",
+                desc: "Mohamed’s barrel reaches the shore of Ginga, the land that will become Texas. After surviving the journey, he meets Alizar, and the two stand together ready to begin a new chapter.",
                 camPos: [0, 10, 24],
                 camLookAt: [0, 2, 0],
                 setup: () => {
                     worldGround.material.color.setHex(0xe0a96d);
                     const props = [];
+                    addSceneDetails(5, props);
 
                     // Palm Trees
                     for (let p = -16; p <= 16; p += 8) {
@@ -968,12 +1182,13 @@ function createTorch(x, y, z) {
             },
             {
                 title: "6. A&M Snack Boom (Chocolate Trade)",
-                desc: "CHOCOLATE MARKET PACKED WITH PEOPLE: Mohamed & Alizar run a bustling snack plaza with a huge crowd of customers buying chocolate bars, exchanging cash notes, and socialising.",
+                desc: "Mohamed and Alizar build A&M Snacks, creating and selling chocolate treats made from cacao. Customers gather around the busy shop, exchanging money for sweets and enjoying the new business.",
                 camPos: [0, 16, 36],
                 camLookAt: [0, 3, 0],
                 setup: () => {
                     worldGround.material.color.setHex(0xdda15e);
                     const props = [];
+                    addSceneDetails(6, props);
 
                     // Grand Snack Shop Structure
                     const shop = new THREE.Mesh(new THREE.BoxGeometry(16, 7, 7), new THREE.MeshStandardMaterial({ color: 0x8b5a2b }));
@@ -1082,7 +1297,7 @@ function createTorch(x, y, z) {
             },
             {
                 title: "7. The Threat of Corruption",
-                desc: "Corrupt forces strike! Mohamed & Alizar get hit multiple times by spear wielders and collapse onto the ground while another arsonist burns the shop pitch black.",
+                desc: "Corrupt forces attack Mohamed and Alizar, striking them until they fall. Behind them, the A&M Snacks shop catches fire; once they are down, the shop burns and collapses into broken pieces.",
                 camPos: [0, 12, 22],
                 camLookAt: [0, 3, 0],
                 skyColor: 0x1b0000,
@@ -1091,28 +1306,83 @@ function createTorch(x, y, z) {
                     scene.fog.color.setHex(0x1b0000);
                     const props = [];
 
-                    const shopMat = new THREE.MeshStandardMaterial({ color: 0x8b5a2b, roughness: 0.8 });
-                    const shop = new THREE.Mesh(new THREE.BoxGeometry(16, 8, 6), shopMat);
-                    shop.position.set(0, 4, -4);
-                    scene.add(shop);
-                    props.push(shop);
+                    // Scene 6 shop, reused here with a black/charred finish.
+                    const shopMat = new THREE.MeshStandardMaterial({ color: 0x080808, roughness: 0.95 });
+                    const roofMat = new THREE.MeshStandardMaterial({ color: 0x101010, roughness: 0.95 });
+                    const woodMat = new THREE.MeshStandardMaterial({ color: 0x151515, roughness: 0.95 });
+                    const signMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.9 });
 
-                    const fireLight = new THREE.PointLight(0xff3300, 8, 40);
-                    fireLight.position.set(0, 4, -1);
+                    const shop = new THREE.Mesh(new THREE.BoxGeometry(16, 7, 7), shopMat);
+                    shop.position.set(0, 3.5, -5);
+
+                    const roof = new THREE.Mesh(new THREE.ConeGeometry(13, 5, 4), roofMat);
+                    roof.position.set(0, 9.5, -5);
+                    roof.rotation.y = Math.PI / 4;
+
+                    const counter = new THREE.Mesh(new THREE.BoxGeometry(13, 1.8, 1.4), woodMat);
+                    counter.position.set(0, 0.9, 0.2);
+
+                    const sign = new THREE.Mesh(new THREE.BoxGeometry(10, 1.8, 0.3), signMat);
+                    sign.position.set(0, 6, -1.2);
+
+                    scene.add(shop, roof, counter, sign);
+                    props.push(shop, roof, counter, sign);
+
+                    // Blackened display jars from the Scene 6 shop.
+                    const jarMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 });
+                    const jars = [];
+                    for (let j = -5; j <= 5; j += 2) {
+                        const jar = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.9), jarMat);
+                        jar.position.set(j, 2.2, 0.2);
+                        scene.add(jar);
+                        jars.push(jar);
+                        props.push(jar);
+                    }
+
+                    // Fire attached around the same shop silhouette.
+                    const flameMat = new THREE.MeshBasicMaterial({ color: 0xff4500 });
+                    const flameMat2 = new THREE.MeshBasicMaterial({ color: 0xffa500 });
+                    const flames = [];
+                    const flamePositions = [
+                        [-6, 2.8, -0.9], [-3, 5.2, -1.0], [0, 7.2, -1.0],
+                        [3.5, 4.2, -1.0], [6, 3.0, -0.9], [-4, 8.2, -5],
+                        [1, 9.8, -5], [5, 7.8, -5]
+                    ];
+                    flamePositions.forEach((pos, idx) => {
+                        const flame = new THREE.Mesh(new THREE.BoxGeometry(0.75, 1.6 + (idx % 3) * 0.35, 0.45), idx % 2 ? flameMat2 : flameMat);
+                        flame.position.set(pos[0], pos[1], pos[2]);
+                        scene.add(flame);
+                        flames.push(flame);
+                        props.push(flame);
+                    });
+
+                    const fireLight = new THREE.PointLight(0xff5a00, 7, 42);
+                    fireLight.position.set(0, 5, -1);
                     scene.add(fireLight);
                     props.push(fireLight);
 
-                    // Smoke & Embers
-                    const embers = [];
-                    for (let i = 0; i < 40; i++) {
-                        const emb = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 0.3), new THREE.MeshBasicMaterial({ color: 0xff6600 }));
-                        emb.position.set((Math.random() - 0.5) * 14, Math.random() * 8, -4 + (Math.random() - 0.5) * 4);
-                        scene.add(emb);
-                        embers.push(emb);
-                        props.push(emb);
+                    // Smoke and embers.
+                    const smokeMat = new THREE.MeshBasicMaterial({ color: 0x222222, transparent: true, opacity: 0.28 });
+                    const smoke = [];
+                    for (let i = 0; i < 18; i++) {
+                        const puff = new THREE.Mesh(new THREE.SphereGeometry(0.45 + (i % 3) * 0.22, 8, 8), smokeMat);
+                        puff.position.set(-6 + (i % 7) * 2, 8 + (i % 5) * 1.1, -5 + (i % 3) * 1.3);
+                        scene.add(puff);
+                        smoke.push(puff);
+                        props.push(puff);
                     }
 
-                    // Mohamed and Alizar
+                    const embers = [];
+                    const emberMat = new THREE.MeshBasicMaterial({ color: 0xff6600 });
+                    for (let i = 0; i < 28; i++) {
+                        const ember = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.22), emberMat);
+                        ember.position.set((Math.random() - 0.5) * 14, 2 + Math.random() * 10, -5 + (Math.random() - 0.5) * 4);
+                        scene.add(ember);
+                        embers.push(ember);
+                        props.push(ember);
+                    }
+
+                    // Mohamed and Alizar.
                     const mohamed = createRobloxR6({ shirtColor: 0x5bc0be, legColor: 0x2b2d42 });
                     mohamed.position.set(-2.5, 0, 1.5);
                     scene.add(mohamed);
@@ -1123,7 +1393,7 @@ function createTorch(x, y, z) {
                     scene.add(alizar);
                     props.push(alizar);
 
-                    // 2 Attackers beating Mohamed and Alizar (matching screenshot placement)
+                    // Attackers beating them.
                     const attacker1 = createRobloxR6({ shirtColor: 0x111111, legColor: 0x050505, accessoryType: 'helmet', weapon: 'spear' });
                     attacker1.position.set(-4.5, 0, 1.5);
                     attacker1.rotation.y = Math.PI / 2;
@@ -1131,43 +1401,74 @@ function createTorch(x, y, z) {
                     const attacker2 = createRobloxR6({ shirtColor: 0x111111, legColor: 0x050505, accessoryType: 'helmet', weapon: 'spear' });
                     attacker2.position.set(4.5, 0, 1.5);
                     attacker2.rotation.y = -Math.PI / 2;
+
                     scene.add(attacker1, attacker2);
                     props.push(attacker1, attacker2);
 
-                    // Arsonist setting shop on fire
+                    // Arsonist keeps the shop burning.
                     const arsonist = createRobloxR6({ shirtColor: 0x111111, legColor: 0x050505, accessoryType: 'helmet', weapon: 'torch' });
                     arsonist.position.set(0, 0, -1);
                     scene.add(arsonist);
                     props.push(arsonist);
 
+                    // Debris pieces used for the collapse.
+                    const debris = [];
+                    const debrisMat = new THREE.MeshStandardMaterial({ color: 0x090909, roughness: 1 });
+                    for (let i = 0; i < 18; i++) {
+                        const piece = new THREE.Mesh(
+                            new THREE.BoxGeometry(0.7 + (i % 3) * 0.45, 0.55 + (i % 2) * 0.35, 0.7 + ((i + 1) % 3) * 0.35),
+                            debrisMat
+                        );
+                        piece.position.set(
+                            (Math.random() - 0.5) * 11,
+                            0.4 + Math.random() * 5,
+                            -5 + (Math.random() - 0.5) * 5
+                        );
+                        piece.rotation.set(Math.random(), Math.random(), Math.random());
+                        piece.visible = false;
+                        scene.add(piece);
+                        debris.push(piece);
+                        props.push(piece);
+                    }
+
                     let timer = 0;
                     let hitsCount = 0;
                     let fallen = false;
+                    let collapseStarted = false;
+                    let collapseT = 0;
 
                     return {
                         actors: props,
                         update: () => {
                             timer += 0.05;
 
-                            // Shop burning black
-                            shopMat.color.lerp(new THREE.Color(0x020202), 0.015);
-                            fireLight.intensity = 6 + Math.sin(timer * 20) * 3;
+                            fireLight.intensity = 6 + Math.sin(timer * 18) * 2.5;
+                            flames.forEach((flame, idx) => {
+                                flame.scale.y = 0.8 + 0.25 * Math.sin(timer * 10 + idx);
+                                flame.position.x += Math.sin(timer * 5 + idx) * 0.004;
+                            });
+
+                            smoke.forEach((puff, idx) => {
+                                puff.position.y += 0.025 + (idx % 3) * 0.006;
+                                puff.position.x += Math.sin(timer + idx) * 0.006;
+                                if (puff.position.y > 16) puff.position.y = 7;
+                            });
+
+                            embers.forEach((p, idx) => {
+                                p.position.y += 0.1 + (idx % 3) * 0.02;
+                                if (p.position.y > 14) p.position.y = 1.5;
+                            });
 
                             if (!fallen) {
-                                // Attackers striking
                                 attacker1.rig.rightArmGroup.rotation.x = -Math.PI / 2 + Math.sin(timer * 15) * 0.9;
                                 attacker2.rig.rightArmGroup.rotation.x = -Math.PI / 2 + Math.cos(timer * 15) * 0.9;
 
-                                // Mohamed & Alizar stagger on hit
                                 mohamed.rotation.z = Math.sin(timer * 15) * 0.25;
                                 alizar.rotation.z = -Math.sin(timer * 15) * 0.25;
 
                                 hitsCount += 0.05;
-                                if (hitsCount > 3.5) {
-                                    fallen = true;
-                                }
+                                if (hitsCount > 3.5) fallen = true;
                             } else {
-                                // Mohamed & Alizar fall onto the ground flat
                                 if (mohamed.rotation.x > -Math.PI / 2) {
                                     mohamed.rotation.x -= 0.12;
                                     mohamed.position.y = 0.5;
@@ -1176,24 +1477,60 @@ function createTorch(x, y, z) {
                                     alizar.rotation.x -= 0.12;
                                     alizar.position.y = 0.5;
                                 }
-                            }
 
-                            embers.forEach(p => {
-                                p.position.y += 0.12;
-                                if (p.position.y > 10) p.position.y = 0.5;
-                            });
+                                if (!collapseStarted && hitsCount > 4.6) {
+                                    collapseStarted = true;
+                                }
+
+                                if (collapseStarted) {
+                                    collapseT = Math.min(1, collapseT + 0.02);
+
+                                    shop.position.y = 3.5 - collapseT * 2.8;
+                                    shop.rotation.z = collapseT * 0.08;
+                                    roof.position.y = 9.5 - collapseT * 4.5;
+                                    roof.rotation.z = collapseT * 0.55;
+                                    counter.position.y = Math.max(0.35, 0.9 - collapseT * 0.6);
+                                    counter.rotation.z = -collapseT * 0.35;
+                                    sign.position.y = 6 - collapseT * 3.5;
+                                    sign.rotation.z = collapseT * 0.65;
+
+                                    jars.forEach((jar, idx) => {
+                                        jar.position.y = Math.max(0.3, 2.2 - collapseT * 1.8);
+                                        jar.rotation.z += 0.03 + idx * 0.001;
+                                    });
+
+                                    if (collapseT > 0.55) {
+                                        debris.forEach((piece, idx) => {
+                                            piece.visible = true;
+                                            piece.position.y -= 0.025 + (idx % 3) * 0.01;
+                                            piece.position.x += Math.sin(timer * 2 + idx) * 0.01;
+                                            piece.rotation.x += 0.025;
+                                            piece.rotation.z += 0.02;
+                                        });
+                                    }
+
+                                    if (collapseT >= 1) {
+                                        shop.visible = false;
+                                        roof.visible = false;
+                                        counter.visible = false;
+                                        sign.visible = false;
+                                        jars.forEach(jar => jar.visible = false);
+                                    }
+                                }
+                            }
                         }
                     };
                 }
             },
             {
                 title: "8. Becoming a Mirja",
-                desc: "Mohamed ascends as a divine leader upon a white marble temple dais flanked by tall columns, as dozens of followers bow in reverence beneath glowing aura particles.",
+                desc: "Mohamed’s journey ends with him honored as a mirja, a spiritual leader who guides his people with wisdom and compassion. His journey from cacao fields and ancient battles to leadership in Texas becomes a lasting legacy.",
                 camPos: [0, 12, 30],
                 camLookAt: [0, 3, 0],
                 setup: () => {
                     worldGround.material.color.setHex(0x52b788);
                     const props = [];
+                    addSceneDetails(8, props);
 
                     const pillarMat = new THREE.MeshStandardMaterial({ color: 0xf8f9fa, roughness: 0.1 });
                     for (let p = -12; p <= 12; p += 4) {
